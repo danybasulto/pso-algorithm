@@ -8,7 +8,7 @@ class ParticleSwarmOptimization:
         __num_particles (int): Number of the particles in the swarm.
         __dimensions (int): Dimensions of the search space.
         __particles (list[Particle]): List of the particles in the swarm.
-        __global_best_position (list[float]): Best known position for the entire swarm.
+        __global_best_position (np.ndarray): Best known position for the entire swarm.
         __global_best_fitness (float): Best value of the objective function known by the whole swarm.
         __cognitive_coeff (float): Cognitive coefficient.
         __social_coeff (float): Social coefficient.
@@ -16,8 +16,9 @@ class ParticleSwarmOptimization:
         
     Examples
     --------
-    >>> 
+    >>> pso = ParticleSwarmOptimization(num_particles=30, dimensions=5)
     """
+    
     def __init__(self, num_particles, dimensions, cognitive_coeff=1.5, social_coeff=1.5, inertia_weight=0.5):
         """Initializes the PSO with a set of particles.
         
@@ -38,7 +39,7 @@ class ParticleSwarmOptimization:
         self.__particles = [Particle(dimensions) for _ in range(num_particles)]
         
         # Initialize best global position
-        self.__global_best_position = None
+        self.__global_best_position = np.zeros(dimensions)
         self.__global_best_fitness = float('inf')
         self.__initialize_global_best()
         
@@ -47,19 +48,19 @@ class ParticleSwarmOptimization:
         for particle in self.__particles:
             if particle.best_fitness < self.__global_best_fitness:
                 self.__global_best_fitness = particle.best_fitness
-                self.__global_best_position = particle.best_position
-                    
+                self.__global_best_position = np.array(particle.best_position)
+    
     def __update_particles(self):
         """It updates the position and velocity of each particle in the swarm."""
         for particle in self.__particles:
             # Upgrade velocity
-            new_velocity = (self.__inertia_weight * particle.velocity +
-                            self.__cognitive_coeff * np.random.rand() * (particle.best_position - particle.position) +
-                            self.__social_coeff * np.random.randn() * (self.__global_best_position - particle.position))
-            particle.velocity = new_velocity.tolist()
+            cognitive_component = self.__cognitive_coeff * np.random.rand() * (np.array(particle.best_position) - particle.position)
+            social_component = self.__social_coeff * np.random.rand() * (self.__global_best_position - particle.position)
+            new_velocity = (self.__inertia_weight * particle.velocity + cognitive_component + social_component)
+            particle.velocity = new_velocity
             
             # Upgrade position
-            particle.position = (particle.position + particle.velocity).tolist()
+            particle.position = particle.position + particle.velocity
             
             # Evaluate new value
             particle.fitness = self.__evaluate_fitness(particle.position)
@@ -67,18 +68,18 @@ class ParticleSwarmOptimization:
             # Upgrade better local position
             if particle.fitness < particle.best_fitness:
                 particle.best_fitness = particle.fitness
-                particle.best_position = particle.position
+                particle.best_position = particle.position.copy()
             
             # Upgrade better global position
             if particle.fitness < self.__global_best_fitness:
                 self.__global_best_fitness = particle.fitness
-                self.__global_best_position = particle.position
+                self.__global_best_position = particle.position.copy()
     
     def __evaluate_fitness(self, position):
         """Evaluates the objective function at the given position.
         
         Args:
-            position (list[float]): The current position of the particle.
+            position (np.ndarray): The current position of the particle.
             
         Returns:
             float: Value of the target function.
@@ -99,7 +100,7 @@ class ParticleSwarmOptimization:
         """Returns the best known global position.
         
         Returns:
-            list[float]: Best global position.
+            np.ndarray: Best global position.
         """
         return self.__global_best_position
     
@@ -111,4 +112,3 @@ class ParticleSwarmOptimization:
             float: Global best value.
         """
         return self.__global_best_fitness
-# (c) 2024 Daniel Basulto del Toro & Juan Antonio Ramirez Aguilar
