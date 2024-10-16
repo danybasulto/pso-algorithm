@@ -12,13 +12,13 @@ class Particle:
     >>> p3 = Particle(dimensions=20)
     
     Attributes:
-        position (list[float]): The current position of the particle in the search space.
-        fitness (float): The value of the target function at the current position.
-        velocity (list[float]): The current velocity of the particle.
-        best_position (list[float]): The best known position of the particle.
-        best_fitness (float): The best value of the objective function found by the particle.
+        __position (np.ndarray): The current position of the particle in the search space.
+        __fitness (float): The value of the target function at the current position.
+        __velocity (np.ndarray): The current velocity of the particle.
+        __best_position (np.ndarray): The best known position of the particle.
+        __best_fitness (float): The best value of the objective function found by the particle.
     """
-    # Constructor
+    
     def __init__(self, dimensions):
         """Initializes a new particle with random position and velocity.
         
@@ -28,11 +28,12 @@ class Particle:
         if not isinstance(dimensions, int) or dimensions <= 0:
             raise ValueError("Las dimensiones deben ser un entero positivo.")
         
-        self.__position = np.random.uniform(-5.12, 5.12, dimensions).tolist()
+        self.__position = np.random.uniform(-5.12, 5.12, dimensions)
         self.__fitness = float('inf')
-        self.__velocity = np.random.uniform(-1, 1, dimensions).tolist()
-        self.__best_position = self.__position[:]
+        self.__velocity = np.random.uniform(-1, 1, dimensions)
+        self.__best_position = self.__position.copy()
         self.__best_fitness = float('inf')
+    
     # -- Getters --
     @property
     def position(self):
