@@ -33,44 +33,24 @@ class Particle:
         self.__velocity = np.random.uniform(-1, 1, dimensions).tolist()
         self.__best_position = self.__position[:]
         self.__best_fitness = float('inf')
-    # -- Getters & Setters --
+    # -- Getters --
     @property
     def position(self):
         return self.__position
-    
-    @position.setter
-    def position(self, value):
-        self.__position = value
     
     @property
     def fitness(self):
         return self.__fitness
     
-    @fitness.setter
-    def fitness(self, value):
-        self.__fitness = value
-    
     @property
     def velocity(self):
         return self.__velocity
-    
-    @velocity.setter
-    def velocity(self, value):
-        self.__velocity = value
     
     @property
     def best_position(self):
         return self.__best_position
     
-    @best_position.setter
-    def best_position(self, value):
-        self.__best_position = value
-    
     @property
     def best_fitness(self):
         return self.__best_fitness
-    
-    @best_fitness.setter
-    def best_fitness(self, value):
-        self.__best_fitness = value
 # (c) 2024 Daniel Basulto del Toro & Juan Antonio Ramirez Aguilar
